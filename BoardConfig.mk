@@ -166,3 +166,31 @@ TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
 #hotfix
 TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
+
+#SHRP Flags
+
+SHRP_DEVICE_CODE := rosemary
+
+SHRP_PATH := device/redmi/$(SHRP_DEVICE_CODE)
+
+SHRP_MAINTAINER := lynx
+
+SHRP_REC_TYPE := Normal
+
+SHRP_DEVICE_TYPE := A/B
+
+SHRP_REC := /dev/block/bootdevice/by-name/boot
+
+SHRP_HAS_RECOVERY_PARTITION := N/A
+
+SHRP_AB := true
+
+SHRP_EDL_MODE := 0
+
+SHRP_INTERNAL := /sdcard
+
+SHRP_EXTERNAL := /sdcard1
+
+SHRP_OTG := /usb_otg
+
+SHRP_FLASH := 0
