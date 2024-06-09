@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
+DEVICE_PATH := device/redmi/rosemary
+PREBUILT_PATH := $(DEVICE_PATH)/prebuilt
+
 # Allow building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
 
 # Allow putting ELF in PRODUCT_COPY_FILES (required by vibrator)
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-
-DEVICE_PATH := device/redmi/rosemary
-PREBUILT_PATH := $(DEVICE_PATH)/prebuilt
 
 # Architecture
 TARGET_ARCH := arm64
@@ -90,33 +90,28 @@ BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
 BOARD_SUPER_PARTITION_SIZE := 9126805504
 BOARD_SUPER_PARTITION_GROUPS := main
 
-BOARD_MAIN_PARTITION_LIST := system vendor product
+BOARD_MAIN_PARTITION_LIST := system vendor product system_ext
 BOARD_MAIN_SIZE := 9122611200
 
 # File systems
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
-
 BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_USERIMAGES_USE_F2FS := true
 
-# AB
+# A/B
 AB_OTA_UPDATER := true
 
 # Workaround for copying error vendor files to recovery ramdisk
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 
 # Recovery
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
-
-# Additional binaries & libraries needed for recovery
-TARGET_RECOVERY_DEVICE_MODULES += \
-    libkeymaster4 \
-    libkeymaster41 \
-    libpuresoftkeymasterdevice
 
 # Hack: prevent anti rollback
 PLATFORM_SECURITY_PATCH := 2099-12-31
@@ -124,28 +119,26 @@ VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 99.87.36
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 
-## TWRP-Specific configuration
-
-TW_THEME := portrait_hdpi
+# TWRP-Specific configuration
 TW_DEVICE_VERSION := rc1
 TW_EXTRA_LANGUAGES := true
+
+TARGET_USES_LOGD := true
+TWRP_INCLUDE_LOGCAT := true
+
+TARGET_USES_MKE2FS := true
 TW_INCLUDE_NTFS_3G := true
 TW_INCLUDE_REPACKTOOLS := true
-TWRP_INCLUDE_LOGCAT := true
-TARGET_USES_LOGD := true
-TARGET_USES_MKE2FS := true
-TW_MAX_BRIGHTNESS := 1800
-TW_DEFAULT_BRIGHTNESS := 500
+TW_INCLUDE_RESETPROP := true
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+RECOVERY_SDCARD_ON_DATA := true
+TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun.%d/file
 
-# Device config
+TW_THEME := portrait_hdpi
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
 TW_FRAMERATE := 60
 TW_SCREEN_BLANK_ON_BOOT := true
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
-
-TW_EXCLUDE_DEFAULT_USB_INIT := true
-RECOVERY_SDCARD_ON_DATA := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun.%d/file
 
 ifneq ($(OF_HIDE_NOTCH),1)
     # Configure Status bar icons for regular TWRP builds only
@@ -157,15 +150,20 @@ endif
 # Decryption
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
+
+TARGET_RECOVERY_DEVICE_MODULES += \
+    libkeymaster4 \
+    libkeymaster41 \
+    libpuresoftkeymasterdevice
+
 TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
     $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
     $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster41.so \
     $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
 
-
-#hotfix
-TW_INCLUDE_RESETPROP := true
-TW_INCLUDE_LIBRESETPROP := true
+# Vibrator
+TARGET_RECOVERY_DEVICE_MODULES += android.hardware.vibrator-service.rosemary
+RECOVERY_BINARY_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/hw/android.hardware.vibrator-service.rosemary
 
 #SHRP Flags
 
@@ -193,4 +191,14 @@ SHRP_EXTERNAL := /sdcard1
 
 SHRP_OTG := /usb_otg
 
-SHRP_FLASH := 0
+SHRP_FLASH := 1
+
+SHRP_STATUSBAR_RIGHT_PADDING := 24
+
+SHRP_STATUSBAR_LEFT_PADDING := 24
+
+SHRP_EXPRESS := true
+
+SHRP_EXPRESS_USE_DATA := true
+
+SHRP_TORCH_PATH := "/sys/devices/platform/flashlights_mt6360/torch_brightness"
